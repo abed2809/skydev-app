@@ -38,7 +38,7 @@ export default function Footer({ lang }: FooterProps) {
             <img
               src={logo}
               alt="Sky Dev"
-              style={{ height: 48, objectFit: 'contain', filter: 'brightness(1.2)', marginBottom: 16 }}
+              style={{ height: 120, objectFit: 'contain', filter: 'brightness(1.2)', marginBottom: 16 }}
             />
             <p style={{ fontSize: 14, lineHeight: 1.7, maxWidth: 240, color: 'rgba(255,255,255,0.55)' }}>
               {lang === 'en'

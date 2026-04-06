@@ -252,8 +252,7 @@ export default function PhoneShowcase({ lang }: { lang: Language }) {
       })
       .catch(() => { /* dev server not running or first load */ });
   }, []);
-  const [activeIdx, setActiveIdx] = useState(1); // center starts at index 1
-  const [paused, setPaused] = useState(false);
+  const [activeIdx, setActiveIdx] = useState(0);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -275,14 +274,7 @@ export default function PhoneShowcase({ lang }: { lang: Language }) {
     animate(mouseY, 0, { duration: 0.8, ease: 'easeOut' });
   }, [mouseX, mouseY]);
 
-  // Auto-rotate
-  useEffect(() => {
-    if (paused) return;
-    const id = setInterval(() => {
-      setActiveIdx(prev => (prev + 1) % phones.length);
-    }, 3000);
-    return () => clearInterval(id);
-  }, [paused, phones.length]);
+
 
 
   const slots = getSlots(activeIdx, phones.length);
@@ -330,7 +322,6 @@ export default function PhoneShowcase({ lang }: { lang: Language }) {
         ref={containerRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        onMouseEnter={() => setPaused(true)}
         className="phones-stage-wrapper"
         style={{ x: pX, y: pY, perspective: 1200 }}
       >
