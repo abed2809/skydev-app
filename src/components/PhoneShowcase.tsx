@@ -10,12 +10,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import { type Language, translations } from '../i18n/translations';
 
-interface PhoneShowcaseProps {
-  lang: Language;
-  cloudName: string;
-  uploadPreset: string;
-}
-
 interface PhoneItem {
   id: string;
   title: string;
@@ -75,12 +69,10 @@ function PhoneFrame({
   phone,
   slot,
   onClick,
-  onUpload,
 }: {
   phone: PhoneItem;
   slot: Slot;
   onClick: () => void;
-  onUpload: () => void;
 }) {
   const pos = POSITIONS[slot];
   const isCenter = slot === 'center';
@@ -225,43 +217,6 @@ function PhoneFrame({
             </div>
           )}
 
-          {/* Upload button overlay — center phone only */}
-          {isCenter && (
-            <div style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              padding: '48px 20px 28px',
-              background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)',
-              display: 'flex',
-              justifyContent: 'center',
-            }}>
-              <button
-                onClick={(e) => { e.stopPropagation(); onUpload(); }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  background: 'rgba(255,255,255,0.15)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255,255,255,0.25)',
-                  color: 'white',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  padding: '8px 14px',
-                  borderRadius: 100,
-                  cursor: 'pointer',
-                  transition: 'background 0.2s',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.25)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.15)')}
-              >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                Upload Media
-              </button>
-            </div>
-          )}
 
           {/* Status bar time */}
           <div style={{
@@ -280,7 +235,7 @@ function PhoneFrame({
 }
 
 // ── Main component ──────────────────────────────────────────────────────────
-export default function PhoneShowcase({ lang, cloudName, uploadPreset }: PhoneShowcaseProps) {
+export default function PhoneShowcase({ lang }: { lang: Language }) {
   const t = translations[lang];
   const [phones, setPhones] = useState<PhoneItem[]>(INITIAL_PHONES);
 
@@ -329,32 +284,6 @@ export default function PhoneShowcase({ lang, cloudName, uploadPreset }: PhoneSh
     return () => clearInterval(id);
   }, [paused, phones.length]);
 
-  // Cloudinary upload
-  const openUpload = useCallback((phoneId: string) => {
-    const w = window as unknown as { cloudinary?: { createUploadWidget: (opts: object, cb: (e: unknown, r: { event: string; info: { secure_url: string; resource_type: string } }) => void) => { open: () => void } } };
-    if (!w.cloudinary) { alert('Add VITE_CLOUDINARY_CLOUD_NAME to .env'); return; }
-    w.cloudinary.createUploadWidget(
-      { cloudName, uploadPreset, sources: ['local', 'url', 'camera'], resourceType: 'auto', maxFileSize: 50000000 },
-      (err, result) => {
-        if (!err && result.event === 'success') {
-          setPhones(prev => {
-            const updated = prev.map(p =>
-              p.id === phoneId
-                ? { ...p, media: result.info.secure_url, mediaType: (result.info.resource_type === 'video' ? 'video' : 'image') as 'video' | 'image' }
-                : p
-            );
-            // Save to server so all devices see the update
-            fetch('/api/phones', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(updated.map(p => ({ id: p.id, media: p.media, mediaType: p.mediaType }))),
-            }).catch(() => {});
-            return updated;
-          });
-        }
-      }
-    ).open();
-  }, [cloudName, uploadPreset]);
 
   const slots = getSlots(activeIdx, phones.length);
 
@@ -412,7 +341,6 @@ export default function PhoneShowcase({ lang, cloudName, uploadPreset }: PhoneSh
               phone={phone}
               slot={slots[i] ?? 'right'}
               onClick={() => { if (slots[i] !== 'center') setActiveIdx(i); }}
-              onUpload={() => openUpload(phone.id)}
             />
           ))}
         </div>
