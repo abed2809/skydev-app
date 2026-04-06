@@ -22,6 +22,14 @@ interface PhoneItem {
 // ── Demo slides — replace media URLs with real Cloudinary uploads ──────────
 const INITIAL_PHONES: PhoneItem[] = [
   {
+    id: '3',
+    title: 'Sky Dev',
+    subtitle: 'Digital Solutions',
+    media: 'https://res.cloudinary.com/dcyznmocy/video/upload/v1775333446/Phone_rec1_kr5zl8.mov',
+    mediaType: 'video',
+    gradient: 'linear-gradient(160deg, #1E1B4B 0%, #312E81 50%, #4F46E5 100%)',
+  },
+  {
     id: '1',
     title: 'Slotify',
     subtitle: 'Smart Booking App',
@@ -36,14 +44,6 @@ const INITIAL_PHONES: PhoneItem[] = [
     media: 'https://res.cloudinary.com/dcyznmocy/video/upload/v1775333473/Phone_rec3_da1yaj.mov',
     mediaType: 'video',
     gradient: 'linear-gradient(160deg, #0F172A 0%, #1E293B 50%, #DC2626 100%)',
-  },
-  {
-    id: '3',
-    title: 'Sky Dev',
-    subtitle: 'Digital Solutions',
-    media: 'https://res.cloudinary.com/dcyznmocy/video/upload/v1775333446/Phone_rec1_kr5zl8.mov',
-    mediaType: 'video',
-    gradient: 'linear-gradient(160deg, #1E1B4B 0%, #312E81 50%, #4F46E5 100%)',
   },
 ];
 
@@ -239,7 +239,7 @@ export default function PhoneShowcase({ lang }: { lang: Language }) {
   const t = translations[lang];
   const phones = INITIAL_PHONES;
 
-  const [activeIdx, setActiveIdx] = useState(0);
+  const [activeIdx, setActiveIdx] = useState(1);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const containerRef = useRef<HTMLDivElement>(null);
