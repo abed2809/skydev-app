@@ -6,7 +6,7 @@
  * - Glow, depth, shadow effects
  * - Cloudinary upload support
  */
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import { type Language, translations } from '../i18n/translations';
 
@@ -237,21 +237,8 @@ function PhoneFrame({
 // ── Main component ──────────────────────────────────────────────────────────
 export default function PhoneShowcase({ lang }: { lang: Language }) {
   const t = translations[lang];
-  const [phones, setPhones] = useState<PhoneItem[]>(INITIAL_PHONES);
+  const phones = INITIAL_PHONES;
 
-  // Load saved media from server (shared across all devices)
-  useEffect(() => {
-    fetch('/api/phones')
-      .then(r => r.json())
-      .then((saved: { id: string; media: string; mediaType: 'image' | 'video' | 'empty' }[]) => {
-        if (!Array.isArray(saved) || saved.length === 0) return;
-        setPhones(INITIAL_PHONES.map(p => {
-          const s = saved.find(x => x.id === p.id);
-          return s?.media ? { ...p, media: s.media, mediaType: s.mediaType } : p;
-        }));
-      })
-      .catch(() => { /* dev server not running or first load */ });
-  }, []);
   const [activeIdx, setActiveIdx] = useState(0);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
