@@ -3,6 +3,10 @@ import logoGentlemen from '../assets/Logo_GentelMen.jpg';
 import logoQSystems from '../assets/Logo_QSystems.jpg';
 import logoReem from '../assets/Logo_Reem.jpg';
 import logoSaj from '../assets/Logo_SajElSham.jpg';
+import logoFornello from '../assets/Logo_Fornello.jpg';
+import logoCrunchies from '../assets/Logo_Crunchies.jpg';
+import logoHamama from '../assets/Logo_Hamama.jpg';
+import logoQusai from '../assets/Logo_Qusai.jpg';
 
 interface ClientLogosProps {
   lang: Language;
@@ -21,6 +25,10 @@ const LOGOS: LogoItem[] = [
   { name: 'QSystems',   initials: 'QS', bg: '#fff', fg: '#000', image: logoQSystems },
   { name: 'Details by Reem', initials: 'DR', bg: '#fff', fg: '#000', image: logoReem },
   { name: 'Saj Alshaam', initials: 'SA', bg: '#fff', fg: '#000', image: logoSaj },
+  { name: 'Fornello House', initials: 'FH', bg: '#fff', fg: '#000', image: logoFornello },
+  { name: 'Crunchies', initials: 'CR', bg: '#fff', fg: '#000', image: logoCrunchies },
+  { name: 'Hamama', initials: 'HM', bg: '#fff', fg: '#000', image: logoHamama },
+  { name: 'Salon Qusai', initials: 'SQ', bg: '#fff', fg: '#000', image: logoQusai },
 ];
 
 const CARD_SIZE = 140;
@@ -119,7 +127,7 @@ export default function ClientLogos({ lang }: ClientLogosProps) {
             gap: GAP,
             padding: '12px 0',
             width: 'max-content',
-            animation: 'clientScroll 100s linear infinite',
+            animation: 'clientScroll 200s linear infinite',
           }}
         >
           {ALL_LOGOS.map((logo, i) => (
