@@ -8,6 +8,7 @@
  */
 import { useState, useRef, useCallback } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
 import { type Language, translations } from '../i18n/translations';
 
 interface PhoneItem {
@@ -47,6 +48,15 @@ const INITIAL_PHONES: PhoneItem[] = [
   },
 ];
 
+// ── Cloudinary delivery — phone screen is ~234px wide, 480px covers 2x DPR ─
+function cloudinaryVariant(url: string, transform: string, ext: string): string {
+  return url
+    .replace('/upload/', `/upload/${transform}/`)
+    .replace(/\.[a-z0-9]+$/i, `.${ext}`);
+}
+const videoSrc  = (url: string) => cloudinaryVariant(url, 'q_auto:eco,w_480', 'mp4');
+const posterSrc = (url: string) => cloudinaryVariant(url, 'so_0,q_auto,w_480', 'jpg');
+
 // ── Positions for left / center / right ────────────────────────────────────
 const POSITIONS = {
   left:   { x: -200, scale: 0.72, rotateY: 22,  z: 0,   opacity: 0.7 },
@@ -68,10 +78,12 @@ function getSlots(activeIdx: number, total: number): Record<number, Slot> {
 function PhoneFrame({
   phone,
   slot,
+  loadMedia,
   onClick,
 }: {
   phone: PhoneItem;
   slot: Slot;
+  loadMedia: boolean;
   onClick: () => void;
 }) {
   const pos = POSITIONS[slot];
@@ -183,7 +195,9 @@ function PhoneFrame({
           )}
           {phone.mediaType === 'video' && phone.media && (
             <video
-              src={phone.media}
+              src={loadMedia ? videoSrc(phone.media) : undefined}
+              poster={posterSrc(phone.media)}
+              preload="none"
               autoPlay muted loop playsInline
               style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }}
             />
@@ -243,6 +257,8 @@ export default function PhoneShowcase({ lang }: { lang: Language }) {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  // Start downloading videos only when the section approaches the viewport
+  const { ref: sectionRef, inView } = useInView({ triggerOnce: true, rootMargin: '400px 0px' });
 
   // Parallax transforms
   const pX = useTransform(mouseX, [-1, 1], [-18, 18]);
@@ -268,6 +284,7 @@ export default function PhoneShowcase({ lang }: { lang: Language }) {
 
   return (
     <section
+      ref={sectionRef}
       id="projects"
       className="section"
       style={{
@@ -318,6 +335,7 @@ export default function PhoneShowcase({ lang }: { lang: Language }) {
               key={phone.id}
               phone={phone}
               slot={slots[i] ?? 'right'}
+              loadMedia={inView}
               onClick={() => { if (slots[i] !== 'center') setActiveIdx(i); }}
             />
           ))}
